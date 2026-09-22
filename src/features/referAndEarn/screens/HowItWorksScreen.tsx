@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppHeader } from '../../../components/AppHeader';
 import { ScreenBackground } from '../../../components/ScreenBackground';
 import { TrustShieldIcon } from '../../../icons';
-import { colors, radii, spacing } from '../../../theme/tokens';
+import { colors, radii, shadows, spacing } from '../../../theme/tokens';
 import { fontFamily } from '../../../theme/typography';
 import { StepConnector } from '../components/StepConnector';
 import { StepIllustration } from '../components/StepIllustration';
@@ -34,8 +34,12 @@ const STEP = {
   /** Text column beside the icon. */
   textWidth: 238,
   textGap: 8,
-  /** Dashed rail offsets within the step stack. */
-  railTop: 32,
+  /**
+   * Dashed rail offsets within the step stack. Figma ends the rail 9pt short
+   * of the last card rather than running it to the edge, which puts its top 3
+   * below the stack rather than 32.
+   */
+  railTop: 3,
   railHeight: 396,
 };
 
@@ -107,7 +111,12 @@ export function HowItWorksScreen({ onBack }: { onBack?: () => void }) {
 
   return (
     <ScreenBackground>
-      <AppHeader title="How it Works?" onBack={onBack} horizontalPadding={spacing.xl} />
+      <AppHeader
+        title="How it Works?"
+        onBack={onBack}
+        horizontalPadding={spacing.xl}
+        reserveAction
+      />
 
       <ScrollView
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom }]}
@@ -165,8 +174,10 @@ const styles = StyleSheet.create({
     padding: HERO.padding,
     backgroundColor: '#E0FAE7',
   },
+  // Figma fills this column (the art takes a fixed 160), so it widens with the
+  // frame rather than leaving slack at 393.
   heroText: {
-    width: HERO.textWidth,
+    flex: 1,
     gap: HERO.gap,
   },
   heroCopy: {
@@ -178,23 +189,26 @@ const styles = StyleSheet.create({
   headline: {
     fontFamily: fontFamily.displayBold,
     fontSize: 24,
-    lineHeight: 29,
+    lineHeight: 28.8,
     color: '#000000',
   },
   heroSubtitle: {
     fontFamily: fontFamily.regular,
     fontSize: 12,
-    lineHeight: 14,
+    lineHeight: 14.4,
     color: colors.body,
   },
+  // Figma fills the column with this pill and outlines it; the 1pt border is
+  // what takes it from 24 to the 26 on the node.
   trustPill: {
-    alignSelf: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
     borderRadius: radii.sm,
+    borderWidth: 1,
+    borderColor: '#D8EFDE',
     backgroundColor: colors.surface,
   },
   trustLabel: {
@@ -205,7 +219,7 @@ const styles = StyleSheet.create({
   },
   trustEmphasis: {
     fontFamily: fontFamily.semibold,
-    color: colors.positive,
+    color: '#33A346',
   },
 
   heroArt: {
@@ -228,8 +242,10 @@ const styles = StyleSheet.create({
     borderRadius: STEP.cardRadius,
     backgroundColor: colors.surface,
   },
+  // Figma gives only the final card a shadow; cards 1-3 have no fx at all.
   cardHighlighted: {
     backgroundColor: colors.ink,
+    ...shadows.card,
   },
   cardText: {
     width: STEP.textWidth,

@@ -3,7 +3,7 @@ import { LayoutAnimation, Platform, Pressable, StyleSheet, Text, UIManager, View
 
 import { Card } from '../../../components/primitives';
 import { ChevronDownIcon, ChevronUpIcon } from '../../../icons';
-import { colors, spacing } from '../../../theme/tokens';
+import { colors, radii, spacing } from '../../../theme/tokens';
 import { fontFamily, typography } from '../../../theme/typography';
 import { FaqItem } from '../api/types';
 
@@ -44,10 +44,12 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
               style={styles.head}
             >
               <Text style={[typography.titleSm, styles.question]}>{item.question}</Text>
+              {/* Duotone in Figma (#424242 base, #EFA145 overlay) — passing a
+                  colour flattened both paths to amber. */}
               {open ? (
-                <ChevronUpIcon width={16} height={16} color={colors.accent} />
+                <ChevronUpIcon width={16} height={16} />
               ) : (
-                <ChevronDownIcon width={16} height={16} color={colors.accent} />
+                <ChevronDownIcon width={16} height={16} />
               )}
             </Pressable>
             {open ? (
@@ -71,16 +73,27 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
 }
 
 const styles = StyleSheet.create({
-  list: { gap: spacing.md },
-  card: { padding: spacing.lg },
-  head: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
-  question: { flex: 1 },
-  answerBlock: {
-    marginTop: spacing.md,
-    gap: spacing.md,
+  list: { gap: spacing.lg },
+  // Figma: r12 (not the 16 the shared Card defaults to), 16 top and bottom
+  // but 24 either side.
+  card: {
+    borderRadius: radii.md,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.xl,
   },
+  head: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
+  question: { flex: 1, color: colors.inkDeep },
+  answerBlock: {
+    marginTop: spacing.lg,
+    // One extra line of pitch between paragraphs, which is what Figma draws.
+    gap: 18,
+  },
+  // 12/18, not the 14/18 `bodyMd` carries — at 14 the first paragraph wraps to
+  // three lines instead of two and the card grows 8pt.
   answer: {
-    ...typography.bodyMd,
+    fontFamily: fontFamily.regular,
+    fontSize: 12,
+    lineHeight: 18,
     color: colors.muted,
   },
   answerStrong: {

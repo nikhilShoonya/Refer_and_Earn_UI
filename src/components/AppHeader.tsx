@@ -29,6 +29,7 @@ export function AppHeader({
   onSearch,
   transparent = true,
   horizontalPadding = spacing.lg,
+  reserveAction = false,
 }: {
   title: string;
   onBack?: () => void;
@@ -37,6 +38,12 @@ export function AppHeader({
   transparent?: boolean;
   /** Figma uses 16 on the dashboard frames and 24 on Brokerage / How it Works. */
   horizontalPadding?: number;
+  /**
+   * How it Works keeps the right-hand action frame at opacity 0 rather than
+   * hiding it, so the bar is still 46 tall with nothing drawn there. Set this
+   * to hold that height on screens with no action.
+   */
+  reserveAction?: boolean;
 }) {
   const insets = useSafeAreaInsets();
   // Figma draws a 44pt status bar above the nav. On web there is no inset to
@@ -70,7 +77,7 @@ export function AppHeader({
           </Text>
         </View>
 
-        <View style={styles.actions}>
+        <View style={[styles.actions, reserveAction && styles.actionsReserved]}>
           {onSearch ? (
             <Pressable
               onPress={onSearch}
@@ -108,6 +115,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.lg,
+  },
+  // Matches the 26pt `op=0` frame Figma leaves in place, so the bar measures
+  // 8 + 26 + 12 = 46 even with no action rendered.
+  actionsReserved: {
+    height: 26,
   },
   bar: {
     flexDirection: 'row',

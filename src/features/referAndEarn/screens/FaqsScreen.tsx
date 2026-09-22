@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
 import { AppHeader } from '../../../components/AppHeader';
@@ -7,25 +7,30 @@ import { spacing } from '../../../theme/tokens';
 import { useReferralClient } from '../api/ReferralProvider';
 import { useAsync } from '../api/useAsync';
 import { FaqAccordion } from '../components/FaqAccordion';
-import { ReferralFooter } from '../components/ReferralFooter';
-import { QrSheet } from '../sheets/QrSheet';
 
-/** FAQ accordion — 11 questions, first one expanded. */
+/**
+ * FAQ accordion — 11 questions, first one expanded.
+ *
+ * Geometry from Figma node 2265:15505. Note the frame carries no sticky
+ * referral footer: the list runs to the bottom edge, so the QR sheet that the
+ * footer used to open is not part of this screen either.
+ */
 export function FaqsScreen({ onBack }: { onBack?: () => void }) {
   const client = useReferralClient();
   const { data: faqs } = useAsync(() => client.getFaqs(), [client]);
-  const { data: code } = useAsync(() => client.getReferralCode(), [client]);
-  const [qrOpen, setQrOpen] = useState(false);
 
   return (
-    <ScreenBackground overlay={<QrSheet visible={qrOpen} onClose={() => setQrOpen(false)} />}>
-      <AppHeader title="FAQs" onBack={onBack} />
+    <ScreenBackground>
+      <AppHeader
+        title="FAQs"
+        onBack={onBack}
+        horizontalPadding={spacing.xl}
+        reserveAction
+      />
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {faqs ? <FaqAccordion items={faqs} /> : null}
       </ScrollView>
-
-      <ReferralFooter code={code} onShowQr={() => setQrOpen(true)} />
     </ScreenBackground>
   );
 }
@@ -33,7 +38,8 @@ export function FaqsScreen({ onBack }: { onBack?: () => void }) {
 const styles = StyleSheet.create({
   content: {
     paddingHorizontal: spacing.gutter,
-    paddingTop: spacing.sm,
+    // Figma puts the first card at y=104 under a 46pt nav.
+    paddingTop: 14,
     paddingBottom: spacing.xxl,
   },
 });
