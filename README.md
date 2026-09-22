@@ -18,7 +18,7 @@ Mock data only — there is no backend, and nothing here calls the network.
 npm install
 npm start          # Expo dev server; press a / i / w
 npm run web        # browser — renders inside an iPhone 16 shell
-```
+``` 
 
 Verification:
 
